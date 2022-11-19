@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import {BookModel} from "./BookModel";
+import axios from "axios";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [books, setBooks] = useState<BookModel[]>([])
+
+    const fetchBooks = () => {
+        axios.get("/api/books")
+            .then(response => response.data)
+            .catch(error => console.log("GET Error" + error))
+            .then(data => setBooks(data))
+    }
+
+    useEffect(() => {
+        fetchBooks()
+    }, [])
+
+
+    const listBooks = books.map((book) =>
+        <li>Title {book.title}
+            Author {book.author}
+            ISBN {book.isbn}</li>
+    );
+    return <>
+
+        <ul>{listBooks}</ul>
+    </>;
+
+
 }
 
 export default App;
