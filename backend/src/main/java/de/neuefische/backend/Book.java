@@ -1,4 +1,11 @@
 package de.neuefische.backend;
+import lombok.With;
 
-public record Book(String id, String title, String author, String isbn, BookState bookState) {
+@With
+public record Book(
+        String id,
+        VolumeInfo volumeInfo
+
+) {
+    
 }
