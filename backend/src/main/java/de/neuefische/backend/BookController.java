@@ -3,10 +3,11 @@ package de.neuefische.backend;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.web.bind.annotation.*;
+
+
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -15,23 +16,31 @@ import java.util.List;
 public class BookController {
     private final BookService bookService;
 
-
     @GetMapping
     public List<Book> getAllBooks() {
         return bookService.getAllBooks();
     }
 
     @GetMapping("/{searchText}")
-    public List<Book> getAllApiBooks(String searchText) {
+    public List<Book> getAllApiBooks(@PathVariable String searchText) {
         return bookService.getAllApiBooks(searchText);
     }
 
     @GetMapping("/isbn/{isbn}")
-    public Book getApiBookByIsbn(@PathVariable String isbn) {
+    public List<Book> getApiBookByIsbn(@PathVariable @Valid String isbn) {
         return bookService.getApiBookByIsbn(isbn);
     }
 
+
+    @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public Book saveBookInDB(@RequestBody Book book) {
+        return bookService.saveBookInDB(book);
+    }
+
+
     // Save book with ISBN in URL and in Body as book
+/*
     @PostMapping("/{isbnToFind}")
     @ResponseStatus(HttpStatus.CREATED)
     public void saveBookWithIsbnAndBodyInDB(@PathVariable String isbnToFind, @RequestBody Book book) {
@@ -48,18 +57,11 @@ public class BookController {
 
         throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
+*/
 
 
 
-
-    @PostMapping("/save")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Book saveBookWithIsbnInDB(@RequestBody Book book) {
-           return bookService.saveBookWithIsbnInDB(book);
-    }
-
-
-    @PostMapping()
+/*    @PostMapping()
     public ResponseEntity<String> saveApiBooksToDb() {
         try {
             bookService.saveApiBooksToDB();
@@ -67,6 +69,6 @@ public class BookController {
         } catch (BookResponseException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-    }
+    }*/
 
 }

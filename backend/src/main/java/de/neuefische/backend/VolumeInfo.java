@@ -9,7 +9,8 @@ public record VolumeInfo (
         String title,
         List<String> authors,
         List<Isbn> industryIdentifiers,
-        ImageLinks imageLinks
+        ImageLinks imageLinks,
+        String previewLink
 
         )  {
 }
