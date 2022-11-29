@@ -7,7 +7,7 @@ export type ResponseBookModel =
 
 
     ],
-        // previewLink: string;
+        previewLink: string;
         "industryIdentifiers": [
         {
             "type": string,

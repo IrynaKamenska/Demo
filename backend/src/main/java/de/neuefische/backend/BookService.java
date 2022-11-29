@@ -1,5 +1,6 @@
 package de.neuefische.backend;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-
 public class BookService {
 
     private final BookRepository bookRepository;
@@ -25,6 +25,7 @@ public class BookService {
         this.apiKey = apiKey;
         this.webClient = WebClient.create(apiUrl);
     }
+
 
     String maxResults = "&maxResults=10";
 
@@ -39,7 +40,7 @@ public class BookService {
     public List<Book> getApiBookByIsbn(String isbn) throws ResponseStatusException {
         ResponseEntity<BookResponseElement> bookResponse = webClient
                 .get()
-                .uri("?q=" + isbn + "&key=" + apiKey)
+                .uri("?q=isbn:" + isbn + "&key=" + apiKey)
 //                .uri("https://www.googleapis.com/books/v1/volumes?q=javascript&key=AIzaSyBp5xzV9nlcvQsRKCVm09RAaprMA9H2Q9Q&maxResults=10")
                 .retrieve()
                 .toEntity(BookResponseElement.class)

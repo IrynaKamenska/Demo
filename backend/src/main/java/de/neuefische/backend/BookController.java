@@ -1,10 +1,9 @@
 package de.neuefische.backend;
 
-import lombok.AllArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import javax.validation.Valid;
@@ -12,18 +11,25 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
-@AllArgsConstructor
 public class BookController {
     private final BookService bookService;
 
-    @GetMapping
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
+
+    @GetMapping("/")
     public List<Book> getAllBooks() {
         return bookService.getAllBooks();
     }
 
-    @GetMapping("/{searchText}")
+    //    @GetMapping("{searchText}")
+    @GetMapping("/search/{searchText}")
     public List<Book> getAllApiBooks(@PathVariable String searchText) {
-        return bookService.getAllApiBooks(searchText);
+        if (!searchText.isEmpty()) {
+            return bookService.getAllApiBooks(searchText);
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/isbn/{isbn}")
