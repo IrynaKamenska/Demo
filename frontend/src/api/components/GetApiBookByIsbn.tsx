@@ -1,37 +1,45 @@
-import React, {FormEvent,  useState} from 'react';
+import React, {FormEvent, useState} from 'react';
 import axios from "axios";
 import BookCard from "./BookCard";
 import "./BookGallery.css";
 import {ResponseBookModel} from "../model/ResponseBookModel";
+import {BookState} from "../model/BookState";
 
 function GetApiBookByIsbn() {
-    const [isbn, setIsbn] = useState<string>("")
-    const [result, setResult] = useState<ResponseBookModel>(
-        {
-            id: "",
-            "volumeInfo": {
-                "title": "",
-                "authors": [],
-                "industryIdentifiers": [
-                    {
-                        "type": "",
-                        "identifier": ""
+    // const [isbn, setIsbn] = useState<string>("")
+    const [text, setText] = useState<string>("")
+    const [result, setResult] = useState<ResponseBookModel>({
+        "totalItems": 0,
+        "items": [
+            {
+                "id": 0,
+                "volumeInfo": {
+                    "title": "",
+                    "authors": [],
+                    "industryIdentifiers": [
+                        {
+                            "type": "",
+                            "identifier": ""
+                        }
+                    ],
+                    "imageLinks": {
+                        "thumbnail": ""
                     },
-                    {
-                        "type": "",
-                        "identifier": ""
-                    }
-                ],
-                "imageLinks": {
-                    "thumbnail": ""
-                }
+                    "previewLink": "",
+                }, bookState: BookState.AVAILABLE
             }
-        }
-    );
+        ]
+    });
 
+    const[searchBy, setSearchBy] = useState<"isbn" | "text">()
+
+
+const arg2 = "isbn/"+text;
+const arg1 = "search/"+text;
+const arg = (searchBy==="isbn" ? arg2 : arg1 )
 
     const getBookByIsbnFromApi = () => {
-        axios.get("/api/books/isbn/" + isbn)
+        axios.get("/api/books/"+ arg)
             .then(response =>
             response.data)
             .catch(error => console.error(error))
@@ -40,14 +48,20 @@ function GetApiBookByIsbn() {
 
 
     function handleChange(event: any) {
-        const isbn = event.target.value;
-        setIsbn(isbn);
+        const text = event.target.value;
+        setText(text);
+
     }
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         getBookByIsbnFromApi()
 
+    }
+
+    function handleClick(){
+        const a= searchBy==="isbn" ? "text":"isbn"
+        setSearchBy(a)
     }
 
 
@@ -61,27 +75,16 @@ function GetApiBookByIsbn() {
                 />
                 <button type={"submit"}>Search</button>
             </form>
+            <button onClick={handleClick}>SearchByState: {searchBy}</button>
 
             <div className={"book-cards"}>
-                <div className={"book-card"}>
-                    <BookCard key={result.id} book={result}/>
-                </div>
 
-
-                {/*{Array.isArray(books)
-                    ? books.map((current, index) =>
+                {Array.isArray(result.items)
+                    ? result.items.map((current, index) =>
                         <div className={"book-card"}>
                             <BookCard key={index} book={current}/>
                         </div>)
-                    : <div className={"book-card"}>
-                        <BookCard book={books}/>
-                    </div>}*/}
-
-
-                {/*   {books.map((current, index) =>
-                    <div className={"book-card"}>
-                        <BookCard key={index} book={current}/>
-                    </div>)}*/}
+                    : ""}
             </div>
 
         </div>
