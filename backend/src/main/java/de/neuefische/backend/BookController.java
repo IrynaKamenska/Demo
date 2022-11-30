@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -34,6 +35,11 @@ public class BookController {
 
     @GetMapping("/isbn/{isbn}")
     public List<Book> getApiBookByIsbn(@PathVariable @Valid String isbn) {
+        isbn = isbn.replaceAll("(\\s|-)", "");
+        if (isbn.length() != 10 && isbn.length() != 13) {
+//            throw new InvalidISBNException(MessageFormat.format("ISBN has length {} but should be either 10 or 13", isbn));
+       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "can't parse argument number:");
+        }
         return bookService.getApiBookByIsbn(isbn);
     }
 
@@ -45,36 +51,5 @@ public class BookController {
     }
 
 
-    // Save book with ISBN in URL and in Body as book
-/*
-    @PostMapping("/{isbnToFind}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void saveBookWithIsbnAndBodyInDB(@PathVariable String isbnToFind, @RequestBody Book book) {
-        List<Isbn> isbnList = book.volumeInfo().industryIdentifiers();
-        for (Isbn isbn : isbnList) {
-            if (isbn.identifier().equals(isbnToFind)) {
-                try {
-                    bookService.saveBookWithIsbnAndBodyInDB(isbnToFind, book);
-                } catch (BookAlreadyExistException e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-                }
-            }
-        }
-
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-    }
-*/
-
-
-
-/*    @PostMapping()
-    public ResponseEntity<String> saveApiBooksToDb() {
-        try {
-            bookService.saveApiBooksToDB();
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (BookResponseException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }*/
 
 }

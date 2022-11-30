@@ -1,6 +1,5 @@
 package de.neuefische.backend;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,13 +27,8 @@ public class BookService {
     }
 
 
-    String maxResults = "&maxResults=10";
+    String maxResults = "&maxResults=5";
 
-//    "https://www.googleapis.com/books/v1/volumes?q=javascript&key=AIzaSyBp5xzV9nlcvQsRKCVm09RAaprMA9H2Q9Q&maxResults=10"
-
-
-    //  https://www.googleapis.com/books/v1/volumes?q=9783756271290&key=AIzaSyBp5xzV9nlcvQsRKCVm09RAaprMA9H2Q9Q
-    //    private final WebClient webClient = WebClient.create();
 
 
     // Todo: 3 unittest: findet, nicht findet leere array, ungültige isbn
@@ -46,7 +41,9 @@ public class BookService {
                 .toEntity(BookResponseElement.class)
                 .block();
         System.out.println("BOOK Response" + bookResponse);
-
+        if (bookResponse.getBody().bookItems().size() == 0) {
+            return new ArrayList<>();
+        }
         return Optional.ofNullable(bookResponse)
                 .map(HttpEntity::getBody)
                 .map(BookResponseElement::bookItems)
@@ -72,50 +69,25 @@ public class BookService {
     public List<Book> getAllApiBooks(String searchText) {
         ResponseEntity<BookResponseElement> bookResponse = webClient
                 .get()
-                .uri("?q="+searchText+"&key="+apiKey+maxResults)
+                .uri("?q=" + searchText + "&key=" + apiKey + maxResults)
                 .retrieve()
                 .toEntity(BookResponseElement.class)
                 .block();
 
-        System.out.println("BOOK Response" + bookResponse);
-
+/*        System.out.println("BOOK Response" + bookResponse);
+        if (bookResponse.getBody().bookItems().size() == 0) {
+            return new ArrayList<>();
+        }
+        System.out.println("BODY Response" + bookResponse.getBody());
         return Optional.ofNullable(bookResponse)
                 .map(HttpEntity::getBody)
                 .map(BookResponseElement::bookItems)
                 .map(bookList -> bookList.stream()
-                .collect(Collectors.toList()))
-                .orElseThrow(() -> new NoBookFoundException("No books could be found"));
+                        .collect(Collectors.toList()))
+                .orElseThrow(() -> new NoBookFoundException("No books could be found"));*/
 
 
 
-      /*  BookResponseElement responseBody;
-        System.out.println("BOOK Response" + bookResponse);
-
-        if (bookResponse != null) {
-            responseBody = bookResponse.getBody();
-            System.out.println(" Response BODY" + responseBody);
-        } else {
-            throw new BookResponseException("Book Response is null");
-        }
-        if (responseBody != null) {
-            return responseBody.bookItems();
-        } else throw new BookResponseException("Response body is null");*/
-    }
-
-//    Isbn isbn = new Isbn("type", "identifier");
-//    ImageLinks imageLinks = new ImageLinks("link1");
-//    VolumeInfo volumeInfo = new VolumeInfo("title", List.of("Author1"), List.of(isbn), imageLinks);
-//    Book book = new Book("id1", volumeInfo);
-//    String findIsbn = book.volumeInfo().industryIdentifiers().get(0).identifier();
-
-
-/*    public void saveApiBooksToDB() {
-        ResponseEntity<BookResponseElement> bookResponse = webClient
-                .get()
-                .uri("https://www.googleapis.com/books/v1/volumes?q=javascript&key=AIzaSyBp5xzV9nlcvQsRKCVm09RAaprMA9H2Q9Q&maxResults=10")
-                .retrieve()
-                .toEntity(BookResponseElement.class)
-                .block();
         BookResponseElement responseBody;
         System.out.println("BOOK Response" + bookResponse);
 
@@ -126,25 +98,10 @@ public class BookService {
             throw new BookResponseException("Book Response is null");
         }
         if (responseBody != null) {
-            responseBody.bookItems();
+            return responseBody.bookItems();
         } else throw new BookResponseException("Response body is null");
-        List<Book> bookList = responseBody.bookItems();
-        for (Book book : bookList) {
-            Book bookToInsert = new Book(book.id(), book.volumeInfo());
+    }
 
-            if (!bookRepository.existsById(book.id())) {
-                bookRepository.insert(bookToInsert);
-            }
-        }
-
-    }*/
-
-    /*    public void saveBookWithIsbnAndBodyInDB(String isbn, Book bookToSave) {
-        bookToSave = getApiBookByIsbn(isbn);
-        if (!bookRepository.existsById(bookToSave.id())) {
-            bookRepository.insert(bookToSave);
-        }
-    }*/
 
 
 

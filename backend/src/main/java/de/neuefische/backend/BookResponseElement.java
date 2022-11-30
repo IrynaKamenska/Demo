@@ -4,5 +4,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public record BookResponseElement(@JsonProperty("items") List<Book> bookItems, int totalItems) {
+public record BookResponseElement(@JsonProperty("items") List<Book> bookItems) {
 }
