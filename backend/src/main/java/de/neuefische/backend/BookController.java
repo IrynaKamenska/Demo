@@ -27,19 +27,14 @@ public class BookController {
 
     //    @GetMapping("{searchText}")
     @GetMapping("/search/{searchText}")
-    public List<Book> getAllApiBooks(@PathVariable String searchText) {
+    public BookResponseElement getAllApiBooks(@PathVariable String searchText) {
         if (!searchText.isEmpty()) {
             return bookService.getAllApiBooks(searchText);
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/isbn/{isbn}")
-    public List<Book> getApiBookByIsbn(@PathVariable @Valid String isbn) {
-        isbn = isbn.replaceAll("(\\s|-)", "");
-        if (isbn.length() != 10 && isbn.length() != 13) {
-//            throw new InvalidISBNException(MessageFormat.format("ISBN has length {} but should be either 10 or 13", isbn));
-       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "can't parse argument number:");
-        }
+    public BookResponseElement getApiBookByIsbn(@PathVariable @Valid String isbn) {
         return bookService.getApiBookByIsbn(isbn);
     }
 

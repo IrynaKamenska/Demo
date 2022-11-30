@@ -1,8 +1,9 @@
 package de.neuefische.backend;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.With;
 
 import java.util.List;
-
-public record BookResponseElement(@JsonProperty("items") List<Book> bookItems) {
+@With
+public record BookResponseElement(int totalItems, @JsonProperty("items") List<Book> bookItems) {
 }
