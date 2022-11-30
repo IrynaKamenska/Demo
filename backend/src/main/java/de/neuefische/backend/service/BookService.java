@@ -1,5 +1,9 @@
-package de.neuefische.backend;
+package de.neuefische.backend.service;
 
+import de.neuefische.backend.repository.BookRepository;
+import de.neuefische.backend.model.BookResponseElement;
+
+import de.neuefische.backend.model.Book;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 import static java.util.Objects.requireNonNull;
 
@@ -76,12 +80,12 @@ public class BookService {
 
 
     public BookResponseElement getAllApiBooks(String searchText) {
-        ResponseEntity<BookResponseElement> bookResponse = webClient
+        ResponseEntity<BookResponseElement> bookResponse = requireNonNull(webClient
                 .get()
                 .uri("?q=" + searchText + "&key=" + apiKey + maxResults)
                 .retrieve()
                 .toEntity(BookResponseElement.class)
-                .block();
+                .block(), "ResponseEntity is null");
 
         System.out.println("BOOK Response" + bookResponse);
         System.out.println("BODY Response" + bookResponse.getBody());
@@ -89,10 +93,10 @@ public class BookService {
 
         List<Book> books = Optional.ofNullable(bookResponse)
                 .map(HttpEntity::getBody)
+                .filter(body -> body.totalItems() >= 1)
                 .map(BookResponseElement::bookItems)
-                .map(bookList -> bookList.stream()
-                        .collect(Collectors.toList()))
-                .orElseThrow(() -> new NoBookFoundException("No books could be found"));
+                .stream()
+                .flatMap(Collection::stream).toList();
         return new BookResponseElement(bookResponse.getBody().totalItems(), books);
 
 

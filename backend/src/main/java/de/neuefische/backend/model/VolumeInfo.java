@@ -1,4 +1,4 @@
-package de.neuefische.backend;
+package de.neuefische.backend.model;
 
 
 import lombok.With;

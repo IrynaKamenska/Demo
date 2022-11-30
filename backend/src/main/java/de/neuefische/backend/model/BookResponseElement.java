@@ -1,6 +1,7 @@
-package de.neuefische.backend;
+package de.neuefische.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.With;
 
 import java.util.List;

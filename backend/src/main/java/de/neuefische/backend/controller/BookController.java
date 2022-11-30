@@ -1,9 +1,11 @@
-package de.neuefische.backend;
+package de.neuefische.backend.controller;
 
+import de.neuefische.backend.model.BookResponseElement;
+import de.neuefische.backend.model.Book;
+import de.neuefische.backend.service.BookService;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import javax.validation.Valid;
@@ -25,12 +27,10 @@ public class BookController {
         return bookService.getAllBooks();
     }
 
-    //    @GetMapping("{searchText}")
+
     @GetMapping("/search/{searchText}")
     public BookResponseElement getAllApiBooks(@PathVariable String searchText) {
-        if (!searchText.isEmpty()) {
-            return bookService.getAllApiBooks(searchText);
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return bookService.getAllApiBooks(searchText);
     }
 
     @GetMapping("/isbn/{isbn}")
@@ -39,7 +39,7 @@ public class BookController {
     }
 
 
-    @PostMapping
+    @PostMapping("/")
     @ResponseStatus(code = HttpStatus.CREATED)
     public Book saveBookInDB(@RequestBody Book book) {
         return bookService.saveBookInDB(book);
