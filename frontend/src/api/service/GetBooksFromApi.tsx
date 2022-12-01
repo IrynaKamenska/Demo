@@ -1,12 +1,14 @@
 import React, {FormEvent, useState} from 'react';
 import axios from "axios";
-import BookCard from "./BookCard";
-import "./BookGallery.css";
+import BookCard from "../components/BookCard";
+import "../components/BookGallery.css";
 import {ResponseBookModel} from "../model/ResponseBookModel";
 import {BookState} from "../model/BookState";
 
-function GetApiBookByIsbn() {
-    // const [isbn, setIsbn] = useState<string>("")
+type GetBooksFromApi = {
+    reloadAllBooks: () => void
+}
+function GetBooksFromApi(props: GetBooksFromApi) {
     const [text, setText] = useState<string>("")
     const [result, setResult] = useState<ResponseBookModel>({
         "totalItems": 0,
@@ -34,12 +36,12 @@ function GetApiBookByIsbn() {
     const[searchBy, setSearchBy] = useState<"isbn" | "text">()
 
 
-const arg2 = "isbn/"+text;
-const arg1 = "search/"+text;
-const arg = (searchBy==="isbn" ? arg2 : arg1 )
+const isbnQuery = "isbn/"+text;
+const keyWordQuery = "search/"+text;
+const query = (searchBy==="isbn" ? isbnQuery : keyWordQuery )
 
-    const getBookByIsbnFromApi = () => {
-        axios.get("/api/books/"+ arg)
+    const getBooksFromApi = () => {
+        axios.get("/api/books/"+ query)
             .then(response =>
             response.data)
             .catch(error => console.error(error))
@@ -55,13 +57,13 @@ const arg = (searchBy==="isbn" ? arg2 : arg1 )
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        getBookByIsbnFromApi()
+        getBooksFromApi()
 
     }
 
     function handleClick(){
-        const a= searchBy==="isbn" ? "text":"isbn"
-        setSearchBy(a)
+        const query = searchBy==="isbn" ? "text":"isbn"
+        setSearchBy(query)
     }
 
 
@@ -75,14 +77,14 @@ const arg = (searchBy==="isbn" ? arg2 : arg1 )
                 />
                 <button type={"submit"}>Search</button>
             </form>
-            <button onClick={handleClick}>SearchByState: {searchBy}</button>
+            <button onClick={handleClick}>SearchByQuery: {searchBy}</button>
 
             <div className={"book-cards"}>
 
                 {Array.isArray(result.items)
                     ? result.items.map((current, index) =>
                         <div className={"book-card"}>
-                            <BookCard key={index} book={current}/>
+                            <BookCard key={index} book={current} reloadAllBooks={props.reloadAllBooks}/>
                         </div>)
                     : ""}
             </div>
@@ -92,4 +94,4 @@ const arg = (searchBy==="isbn" ? arg2 : arg1 )
 
 }
 
-export default GetApiBookByIsbn;
+export default GetBooksFromApi;

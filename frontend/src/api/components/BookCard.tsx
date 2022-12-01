@@ -1,14 +1,21 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "./BookCard.css";
 
 import {BookModel} from "../model/BookModel";
+import addApiBookToDB from "../service/AddApiBookToDB";
+import axios from "axios";
+import {BookState} from "../model/BookState";
+import AddApiBookToDB from "../service/AddApiBookToDB";
 
 type BookCardProps = {
     book: BookModel;
+    reloadAllBooks: () => void
 
 }
 
 function BookCard(props: BookCardProps) {
+
+
 
     return <>
 
@@ -29,9 +36,9 @@ function BookCard(props: BookCardProps) {
                      alt={props.book.volumeInfo.title}/>
             }
             <a href={props.book.volumeInfo.previewLink} className={"link-details"} target="_blank" rel="noreferrer">More Info</a>
-       {/*<button>{addBook}</button>*/}
+
         </div>
-        {/*<AddApiBook book={props.book} reloadAllBooks={props.reloadAllBooks}/>*/}
+        <AddApiBookToDB book={props.book} reloadAllBooks={props.reloadAllBooks}/>
     </>
 }
 
